@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberControl - Iniciar Sesión</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .auth-card { background: #1e1e1e; width: 100%; max-width: 400px; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #333; text-align: center; }
+        .auth-card h1 { font-size: 24px; color: #d4af37; margin-bottom: 5px; font-weight: bold; }
+        .auth-card p { font-size: 13px; color: #aaa; margin-bottom: 20px; }
+
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: #bbb; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input { width: 100%; padding: 12px; padding-right: 40px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        .input-wrapper input:focus { border-color: #d4af37; }
+        
+        .toggle-password { position: absolute; right: 12px; background: none; border: none; color: #aaa; cursor: pointer; font-size: 16px; user-select: none; }
+        
+        .form-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #d4af37; }
+
+        .btn-main { width: 100%; padding: 12px; background: #d4af37; color: #000; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        .btn-main:hover { background: #c5a028; }
+
+        .toggle-text { margin-top: 15px; font-size: 13px; color: #aaa; }
+        .toggle-text span { color: #d4af37; cursor: pointer; font-weight: bold; text-decoration: underline; }
+    </style>
+
+    <!-- Librerías de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+    <div class="auth-card">
+        <h1>💈 BarberControl</h1>
+        <p id="lblSubtitulo">Ingresa a tu panel de gestión de barbería</p>
+
+        <!-- CAMPO REGISTRO: NOMBRE BARBERÍA -->
+        <div class="form-group" id="groupNombre" style="display: none;">
+            <label>Nombre de la Barbería o Barbero</label>
+            <input type="text" id="txtNombre" placeholder="Ej. Barbería El Rey / Carlos Pérez">
+        </div>
+
+        <!-- CORREO ELECTRÓNICO -->
+        <div class="form-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="txtCorreo" placeholder="barberia@ejemplo.com">
+        </div>
+
+        <!-- CONTRASEÑA CON BOTÓN VER/OCULTAR -->
+        <div class="form-group">
+            <label>Contraseña</label>
+            <div class="input-wrapper">
+                <input type="password" id="txtPassword" placeholder="••••••••">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+            </div>
+        </div>
+
+        <button class="btn-main" id="btnAccion" onclick="ejecutarAccion()">Iniciar Sesión</button>
+
+        <div class="toggle-text">
+            <span id="lblToggle" onclick="cambiarModo()">¿No tienes cuenta? Regístrate aquí</span>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCVy7IO3MvdtRBboJS9JbFbvT7lHf8dk04",
+          authDomain: "motocontrol-4878c.firebaseapp.com",
+          projectId: "motocontrol-4878c",
+          storageBucket: "motocontrol-4878c.firebasestorage.app",
+          messagingSenderId: "1041662823292",
+          appId: "1:1041662823292:web:5431940ff82b618f6432f9",
+          measurementId: "G-110QXLC1FC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let modoRegistro = false;
+
+        // VERIFICAR SI YA HAY SESIÓN INICIADA
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = "barberia.html";
+            }
+        });
+
+        // CAMBIAR ENTRE LOGIN Y REGISTRO
+        function cambiarModo() {
+            modoRegistro = !modoRegistro;
+            if (modoRegistro) {
+                document.getElementById("lblSubtitulo").innerText = "Registra tu barbería y obtén 15 días gratis";
+                document.getElementById("groupNombre").style.display = "block";
+                document.getElementById("btnAccion").innerText = "Registrar Barbería";
+                document.getElementById("lblToggle").innerText = "¿Ya tienes cuenta? Inicia sesión";
+            } else {
+                document.getElementById("lblSubtitulo").innerText = "Ingresa a tu panel de gestión de barbería";
+                document.getElementById("groupNombre").style.display = "none";
+                document.getElementById("btnAccion").innerText = "Iniciar Sesión";
+                document.getElementById("lblToggle").innerText = "¿No tienes cuenta? Regístrate aquí";
+            }
+        }
+
+        // MOSTRAR / OCULTAR CONTRASEÑA
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById("txtPassword");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+            } else {
+                passInput.type = "password";
+            }
+        }
+
+        // EJECUTAR LOGIN O REGISTRO
+        function ejecutarAccion() {
+            const correo = document.getElementById("txtCorreo").value.trim();
+            const password = document.getElementById("txtPassword").value;
+            const nombre = document.getElementById("txtNombre").value.trim();
+
+            if (!correo || !password) {
+                alert("Por favor completa los campos de correo y contraseña.");
+                return;
+            }
+
+            if (modoRegistro) {
+                if (!nombre) {
+                    alert("Por favor ingresa el nombre de tu barbería o tu nombre.");
+                    return;
+                }
+
+                auth.createUserWithEmailAndPassword(correo, password)
+                    .then((userCredential) => {
+                        const uid = userCredential.user.uid;
+                        
+                        // Asignar 15 días de prueba a partir de hoy
+                        const fechaPrueba = new Date();
+                        fechaPrueba.setDate(fechaPrueba.getDate() + 15);
+
+                        db.collection("usuarios").doc(uid).set({
+                            nombre: nombre,
+                            correo: correo,
+                            rol: "barbero",
+                            expiraEn: fechaPrueba.toISOString(),
+                            creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            alert("¡Barbería registrada con éxito! Tienes 15 días de prueba.");
+                            window.location.href = "barberia.html";
+                        });
+                    })
+                    .catch((error) => {
+                        alert("Error al registrar: " + error.message);
+                    });
+
+            } else {
+                auth.signInWithEmailAndPassword(correo, password)
+                    .then(() => {
+                        window.location.href = "barberia.html";
+                    })
+                    .catch((error) => {
+                        alert("Error al iniciar sesión: " + error.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
