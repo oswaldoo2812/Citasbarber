@@ -6,78 +6,91 @@
     <title>BarberControl - Panel de Gestión</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #121212; color: #ffffff; padding: 20px; }
+        body { background-color: #121212; color: #ffffff; padding: 20px; overflow-x: hidden; }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
         .header h1 { font-size: 20px; color: #d4af37; }
         .licencia-header { font-size: 16px; font-weight: bold; color: #4caf50; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
         
+        .header-btns { display: flex; gap: 8px; align-items: center; }
+        .btn-vip-drawer { background: #3d2e00; color: #ffd700; border: 1px solid #ffd700; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-logout { background: #333; color: #ff5252; border: 1px solid #444; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         
+        /* BOTÓN / PESTAÑA INDICADORA EN EL BORDE IZQUIERDO */
+        .swipe-indicator-btn {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            background: #3d2e00;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            border-left: none;
+            padding: 12px 6px 12px 8px;
+            border-radius: 0 10px 10px 0;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 9990;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: pulseLeft 2s infinite;
+        }
+
+        @keyframes pulseLeft {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(4px); }
+        }
+
         .card { background: #1e1e1e; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid #2a2a2a; }
         .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .card h2 { font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card .value { font-size: 26px; font-weight: bold; color: #fff; }
-        .card .subtext { font-size: 13px; color: #aaa; margin-top: 5px; }
+        .card .value { font-size: 24px; font-weight: bold; color: #fff; }
+        .card .subtext { font-size: 12px; color: #aaa; margin-top: 5px; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* BOTONES DESPLEGABLES */
+        .filter-container { display: flex; background: #2a2a2a; border-radius: 8px; padding: 3px; margin-bottom: 15px; }
+        .filter-btn { flex: 1; padding: 8px; background: none; border: none; color: #aaa; font-weight: bold; font-size: 12px; cursor: pointer; border-radius: 6px; text-align: center; }
+        .filter-btn.active { background: #d4af37; color: #000; }
+
         .btn-toggle-card {
-            width: 100%;
-            background: #2a2a2a;
-            color: #d4af37;
-            border: 1px solid #d4af37;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
+            width: 100%; background: #2a2a2a; color: #d4af37; border: 1px solid #d4af37;
+            padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold;
+            cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center;
         }
-        .btn-toggle-card:hover { background: #333; }
 
         .form-container { display: none; margin-top: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 10px; }
         .form-group input, .form-group select { 
             width: 100%; padding: 11px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 13px; outline: none; 
         }
-        .form-group input:focus, .form-group select:focus { border-color: #d4af37; }
-        
-        .btn-action { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: background 0.2s; margin-top: 5px; }
-        .btn-action:hover { background: #c5a028; }
 
+        .btn-action { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 5px; }
         .btn-reset-day { background: #3a1111; color: #ff5252; border: 1px solid #ff5252; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
-        .btn-reset-day:hover { background: #ff5252; color: #fff; }
 
-        /* LISTAS Y CITAS DE HOY */
         .citas-list { margin-top: 10px; }
         .item-cita { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #d4af37; }
         .item-cita div strong { font-size: 15px; color: #fff; display: block; }
         .item-cita div small { color: #aaa; font-size: 12px; display: block; margin-top: 2px; }
         .item-cita .precio-tag { background: #1e1e1e; color: #4caf50; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 4px; text-align: right; }
         
+        .vip-badge { display: inline-block; background: #3d2e00; color: #ffd700; border: 1px solid #ffd700; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px; }
+
         .btn-estado { border: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 4px; }
         .btn-completar { background: #4caf50; color: #fff; }
         .btn-cancelar { background: #ff5252; color: #fff; }
 
-        /* DISEÑO DE HISTORIAL MEJORADO Y ORDENADO */
         .historial-dia-card { background: #181818; border: 1px solid #333; border-radius: 10px; padding: 14px; margin-bottom: 15px; }
         .historial-dia-header { font-weight: bold; color: #d4af37; font-size: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; }
         
         .historial-item-cliente { 
-            background: #242424; 
-            border-radius: 8px; 
-            padding: 10px 12px; 
-            margin-bottom: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start;
-            border-left: 3px solid #d4af37;
+            background: #242424; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; 
+            display: flex; justify-content: space-between; align-items: flex-start; border-left: 3px solid #d4af37;
         }
 
         .cliente-info { display: flex; flex-direction: column; gap: 3px; max-width: 65%; }
@@ -91,12 +104,10 @@
 
         .historial-total { text-align: right; margin-top: 10px; font-size: 15px; font-weight: bold; color: #4caf50; border-top: 1px dashed #444; padding-top: 8px; }
 
-        /* PANEL EXPIRADO */
         .expired-card { background: #2a0808; border: 2px solid #ff5252; border-radius: 16px; padding: 30px 20px; text-align: center; margin-top: 20px; }
         .expired-card h2 { color: #ff5252; font-size: 22px; margin-bottom: 10px; }
         .expired-card p { color: #ccc; font-size: 14px; line-height: 1.5; }
 
-        /* ADMINISTRADOR */
         .admin-section { display: none; margin-top: 10px; }
         .admin-title { font-size: 18px; color: #d4af37; font-weight: bold; margin-bottom: 15px; }
         .usuario-card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #d4af37; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -106,14 +117,72 @@
         .admin-actions input[type="number"] { width: 70px; padding: 6px 8px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
         .btn-add-days { background: #d4af37; color: #000; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
         .btn-expire-days { background: #3a1111; color: #ff5252; border: 1px solid #ff5252; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+        /* PANEL DESLIZABLE DESDE LA IZQUIERDA CLIENTES VIP */
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6); z-index: 9998; display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .vip-drawer {
+            position: fixed; top: 0; left: -320px; width: 310px; height: 100vh;
+            background: #1e1e1e; border-right: 1px solid #333; z-index: 9999;
+            padding: 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+            transition: left 0.3s ease-in-out; display: flex; flex-direction: column;
+        }
+
+        .vip-drawer.open { left: 0; }
+        .vip-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .vip-drawer-header h2 { color: #ffd700; font-size: 18px; }
+        .btn-close-drawer { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+
+        .vip-client-card { background: #282828; border: 1px solid #444; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .vip-client-card strong { color: #fff; font-size: 14px; display: block; }
+        .vip-client-card small { color: #aaa; font-size: 12px; }
+        .progress-bar-bg { background: #111; height: 8px; border-radius: 4px; margin: 8px 0; overflow: hidden; }
+        .progress-bar-fill { background: #d4af37; height: 100%; width: 0%; transition: width 0.3s; }
+        .btn-claim-reward { width: 100%; background: #ffd700; color: #000; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; margin-top: 5px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: #282828; border: 1px solid #444; border-radius: 14px; padding: 22px; width: 100%; max-width: 380px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); text-align: center; }
+        .modal-box p { color: #e0e0e0; font-size: 15px; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+        .modal-buttons { display: flex; justify-content: center; gap: 10px; }
+        .modal-btn { padding: 10px 18px; border-radius: 8px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; flex: 1; }
+        .modal-btn-ok { background: #d4af37; color: #000; }
+        .modal-btn-cancel { background: #444; color: #fff; }
     </style>
 
-    <!-- Librerías de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 </head>
 <body>
+
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-box">
+            <p id="modalText"></p>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA INDICADORA EN EL BORDE IZQUIERDO -->
+    <button class="swipe-indicator-btn" onclick="toggleVipDrawer(true)">
+        👉 DESLIZAR VIP
+    </button>
+
+    <!-- OVERLAY Y PANEL DESLIZABLE DESDE LA IZQUIERDA CLIENTES VIP -->
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleVipDrawer(false)"></div>
+    <div id="vipDrawer" class="vip-drawer">
+        <div class="vip-drawer-header">
+            <h2>⭐ Clientes VIP / Premios</h2>
+            <button class="btn-close-drawer" onclick="toggleVipDrawer(false)">✕</button>
+        </div>
+        <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">Cada 5 visitas acumuladas se habilita un <strong>Corte Gratis</strong>.</p>
+        <div id="listaClientesVip" style="overflow-y: auto; flex: 1;">
+            <p style="color: #888; font-size: 13px;">Cargando clientes fiduciarios...</p>
+        </div>
+    </div>
 
     <div class="header">
         <div>
@@ -121,27 +190,38 @@
             <h1 id="lblBarberia">Cargando...</h1>
             <div id="lblLicenciaHeader" class="licencia-header"></div>
         </div>
-        <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <div class="header-btns">
+            <button class="btn-vip-drawer" onclick="toggleVipDrawer(true)">👥 VIP</button>
+            <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+        </div>
     </div>
 
-    <!-- VISTA PARA BARBERÍA ACTIVA -->
     <div id="vistaBarberia" style="display: none;">
-        
-        <!-- INDICADORES PRINCIPALES -->
-        <div class="grid" style="margin-bottom: 15px;">
+        <div class="filter-container">
+            <button id="filterHoy" class="filter-btn active" onclick="cambiarFiltroFinanciero('hoy')">Hoy</button>
+            <button id="filterSemana" class="filter-btn" onclick="cambiarFiltroFinanciero('semana')">Esta Semana</button>
+            <button id="filterMes" class="filter-btn" onclick="cambiarFiltroFinanciero('mes')">Este Mes</button>
+        </div>
+
+        <div class="grid" style="margin-bottom: 12px;">
             <div class="card" style="margin-bottom: 0;">
-                <h2>Citas de Hoy</h2>
-                <div class="value" id="lblTotalCitas">0</div>
-                <div class="subtext">Registradas</div>
+                <h2>Recaudado</h2>
+                <div class="value" style="color: #4caf50;" id="lblIngresos">$0</div>
+                <div class="subtext" id="lblSubtextIngresos">Completados Hoy</div>
             </div>
             <div class="card" style="margin-bottom: 0;">
-                <h2>Ingresos Hoy</h2>
-                <div class="value" style="color: #4caf50;" id="lblIngresos">$0</div>
-                <div class="subtext">Completados</div>
+                <h2>Citas Total</h2>
+                <div class="value" id="lblTotalCitas">0</div>
+                <div class="subtext" id="lblSubtextCitas">Registradas Hoy</div>
             </div>
         </div>
 
-        <!-- FORMULARIO DESPLEGABLE -->
+        <div class="card">
+            <h2>🏆 Servicio Top</h2>
+            <div class="value" style="font-size: 18px; color: #d4af37;" id="lblTopServicio">Ninguno aún</div>
+            <div class="subtext">Más solicitado en este período</div>
+        </div>
+
         <div class="card">
             <button class="btn-toggle-card" onclick="toggleFormulario()">
                 <span>➕ Agendar Nueva Cita</span>
@@ -165,11 +245,121 @@
             </div>
         </div>
 
-        <!-- AGENDA DEL DÍA -->
         <div class="card">
             <div class="card-header-flex">
                 <h2>📋 Agenda del Día</h2>
                 <button id="btnResetDay" class="btn-reset-day" onclick="reiniciarDia()">🔄 Reiniciar Día</button>
+            </div>
+            <div id="listaCitas" class="citas-list">
+                <p style="font-size: 13px; color: #aaa;">Cargando citas...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <button class="btn-toggle-card" onclick="toggleHistorial()" style="border-color: #4caf50; color: #4caf50;">
+                <span>📊 Historial de Cierres Diarios</span>
+                <span id="iconoFlechaHistorial">▼</span>
+            </button>
+            <div id="historialContainer" class="form-container">
+                <div id="listaHistorial">
+                    <p style="font-size: 13px; color: #aaa;">Cargando historial...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vistaExpirado" class="expired-card" style="display: none;">
+        <h2>🚫 Suscripción Expirada</h2>
+        <p>Tus días de acceso a BarberControl han finalizado o tu cuenta no está configurada.</p>
+        <p style="margin-top: 10px; font-size: 13px; color: #aaa;">Cierra sesión y crea una cuenta nueva para obtener 15 días gratis.</p>
+    </div>
+
+    <div class="admin-section" id="vistaAdmin">
+        <div class="admin-title">👑 Panel Administrador - Suscripciones</div>
+        <div id="listaUsuarios">Cargando barberías registradas...</div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCVy7IO3MvdtRBboJS9JbFbvT7lHf8dk04",
+          authDomain: "motocontrol-4878c.firebaseapp.com",
+          projectId: "motocontrol-4878c",
+          storageBucket: "motocontrol-4878c.firebasestorage.app",
+          messagingSenderId: "1041662823292",
+          appId: "1:1041662823292:web:5431940ff82b618f6432f9",
+          measurementId: "G-110QXLC1FC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let usuarioActualUID = null;
+        let citasExistentes = [];
+        let historialCompleto = [];
+        let clientesVisitasMap = {};
+        let filtroActual = 'hoy';
+
+        function mostrarAlerta(mensaje) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("customModal");
+                const modalText = document.getElementById("modalText");
+                const modalBtns = document.getElementById("modalButtons");
+
+                modalText.innerText = mensaje;
+                modalBtns.innerHTML = `<button class="modal-btn modal-btn-ok" id="btnAlertOk">OK</button>`;
+                modal.style.display = "flex";
+
+                document.getElementById("btnAlertOk").onclick = () => {
+                    modal.style.display = "none";
+                    resolve(true);
+                };
+            });
+        }
+
+        function mostrarConfirmacion(mensaje) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("customModal");
+                const modalText = document.getElementById("modalText");
+                const modalBtns = document.getElementById("modalButtons");
+
+                modalText.innerText = mensaje;
+                modalBtns.innerHTML = `
+                    <button class="modal-btn modal-btn-cancel" id="btnConfirmCancel">Cancelar</button>
+                    <button class="modal-btn modal-btn-ok" id="btnConfirmOk">Aceptar</button>
+                `;
+                modal.style.display = "flex";
+
+                document.getElementById("btnConfirmOk").onclick = () => {
+                    modal.style.display = "none";
+                    resolve(true);
+                };
+
+                document.getElementById("btnConfirmCancel").onclick = () => {
+                    modal.style.display = "none";
+                    resolve(false);
+                };
+            });
+        }
+
+        function toggleVipDrawer(abrir) {
+            const drawer = document.getElementById("vipDrawer");
+            const overlay = document.getElementById("drawerOverlay");
+
+            if (abrir) {
+                drawer.classList.add("open");
+                overlay.style.display = "block";
+                renderizarClientesVip();
+            } else {
+                drawer.classList.remove("open");
+                overlay.style.display = "none";
+            }
+        }
+
+        // DETECCIÓN TÁCTIL EXCLUSIVA DESDE EL BORDE IZQUIERDO
+        let touchstartX = 0;
+        let touchstartY = 0;
+        let touchen              <button id="btnResetDay" class="btn-reset-day" onclick="reiniciarDia()">🔄 Reiniciar Día</button>
             </div>
             <div id="listaCitas" class="citas-list">
                 <p style="font-size: 13px; color: #aaa;">Cargando citas...</p>
