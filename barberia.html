@@ -16,28 +16,12 @@
         .btn-vip-drawer { background: #3d2e00; color: #ffd700; border: 1px solid #ffd700; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-logout { background: #333; color: #ff5252; border: 1px solid #444; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         
-        /* BOTÓN / PESTAÑA INDICADORA EN EL BORDE IZQUIERDO */
         .swipe-indicator-btn {
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            background: #3d2e00;
-            color: #ffd700;
-            border: 1px solid #ffd700;
-            border-left: none;
-            padding: 12px 6px 12px 8px;
-            border-radius: 0 10px 10px 0;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 9990;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            position: fixed; top: 50%; left: 0; transform: translateY(-50%);
+            background: #3d2e00; color: #ffd700; border: 1px solid #ffd700; border-left: none;
+            padding: 12px 6px 12px 8px; border-radius: 0 10px 10px 0; font-size: 11px; font-weight: bold;
+            cursor: pointer; z-index: 9990; box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            writing-mode: vertical-rl; text-orientation: mixed; display: flex; align-items: center; gap: 6px;
             animation: pulseLeft 2s infinite;
         }
 
@@ -118,18 +102,15 @@
         .btn-add-days { background: #d4af37; color: #000; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
         .btn-expire-days { background: #3a1111; color: #ff5252; border: 1px solid #ff5252; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
 
-        /* PANEL DESLIZABLE DESDE LA IZQUIERDA CLIENTES VIP */
         .drawer-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.6); z-index: 9998; display: none;
-            transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.6); z-index: 9998; display: none; transition: opacity 0.3s ease;
         }
 
         .vip-drawer {
             position: fixed; top: 0; left: -320px; width: 310px; height: 100vh;
             background: #1e1e1e; border-right: 1px solid #333; z-index: 9999;
-            padding: 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.8);
-            transition: left 0.3s ease-in-out; display: flex; flex-direction: column;
+            padding: 20px; box-shadow: 5px 0 25px rgba(0,0,0,0.8); transition: left 0.3s ease-in-out; display: flex; flex-direction: column;
         }
 
         .vip-drawer.open { left: 0; }
@@ -166,12 +147,10 @@
         </div>
     </div>
 
-    <!-- PESTAÑA INDICADORA EN EL BORDE IZQUIERDO -->
     <button class="swipe-indicator-btn" onclick="toggleVipDrawer(true)">
         👉 DESLIZAR VIP
     </button>
 
-    <!-- OVERLAY Y PANEL DESLIZABLE DESDE LA IZQUIERDA CLIENTES VIP -->
     <div id="drawerOverlay" class="drawer-overlay" onclick="toggleVipDrawer(false)"></div>
     <div id="vipDrawer" class="vip-drawer">
         <div class="vip-drawer-header">
@@ -187,7 +166,7 @@
     <div class="header">
         <div>
             <span style="font-size: 12px; color: #aaa;">Panel Barbería</span>
-            <h1 id="lblBarberia">Cargando...</h1>
+            <h1 id="lblBarberia">Barbería</h1>
             <div id="lblLicenciaHeader" class="licencia-header"></div>
         </div>
         <div class="header-btns">
@@ -356,85 +335,47 @@
             }
         }
 
-        // DETECCIÓN TÁCTIL EXCLUSIVA DESDE EL BORDE IZQUIERDO
         let touchstartX = 0;
         let touchstartY = 0;
-        let touchen              <button id="btnResetDay" class="btn-reset-day" onclick="reiniciarDia()">🔄 Reiniciar Día</button>
-            </div>
-            <div id="listaCitas" class="citas-list">
-                <p style="font-size: 13px; color: #aaa;">Cargando citas...</p>
-            </div>
-        </div>
+        let touchendX = 0;
+        let touchendY = 0;
 
-        <!-- HISTORIAL DESPLEGABLE DE GANANCIAS -->
-        <div class="card">
-            <button class="btn-toggle-card" onclick="toggleHistorial()" style="border-color: #4caf50; color: #4caf50;">
-                <span>📊 Historial de Ganancias por Día</span>
-                <span id="iconoFlechaHistorial">▼</span>
-            </button>
-            <div id="historialContainer" class="form-container">
-                <div id="listaHistorial">
-                    <p style="font-size: 13px; color: #aaa;">Cargando historial...</p>
-                </div>
-            </div>
-        </div>
+        document.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+            touchstartY = e.changedTouches[0].screenY;
+        }, false);
 
-    </div>
+        document.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            touchendY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, false);
 
-    <!-- VISTA LICENCIA EXPIRADA -->
-    <div id="vistaExpirado" class="expired-card" style="display: none;">
-        <h2>🚫 Suscripción Expirada</h2>
-        <p>Tus días de acceso a BarberControl han finalizado.</p>
-        <p style="margin-top: 10px; font-size: 13px; color: #aaa;">Ponte en contacto con el administrador para renovar tu membresía.</p>
-    </div>
+        function handleSwipe() {
+            const diffX = touchendX - touchstartX;
+            const diffY = Math.abs(touchendY - touchstartY);
 
-    <!-- VISTA ADMINISTRADOR -->
-    <div class="admin-section" id="vistaAdmin">
-        <div class="admin-title">👑 Panel Administrador - Suscripciones</div>
-        <div id="listaUsuarios">Cargando barberías registradas...</div>
-    </div>
+            if (touchstartX <= 40 && diffX > 50 && diffY < 80) {
+                toggleVipDrawer(true);
+            }
 
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyCVy7IO3MvdtRBboJS9JbFbvT7lHf8dk04",
-          authDomain: "motocontrol-4878c.firebaseapp.com",
-          projectId: "motocontrol-4878c",
-          storageBucket: "motocontrol-4878c.firebasestorage.app",
-          messagingSenderId: "1041662823292",
-          appId: "1:1041662823292:web:5431940ff82b618f6432f9",
-          measurementId: "G-110QXLC1FC"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        let usuarioActualUID = null;
-        let citasExistentes = [];
+            if (touchstartX - touchendX > 70 && diffY < 80) {
+                toggleVipDrawer(false);
+            }
+        }
 
         function toggleFormulario() {
             const container = document.getElementById("formContainer");
             const flecha = document.getElementById("iconoFlechaForm");
-            if (container.style.display === "block") {
-                container.style.display = "none";
-                flecha.innerText = "▼";
-            } else {
-                container.style.display = "block";
-                flecha.innerText = "▲";
-            }
+            container.style.display = container.style.display === "block" ? "none" : "block";
+            flecha.innerText = container.style.display === "block" ? "▲" : "▼";
         }
 
         function toggleHistorial() {
             const container = document.getElementById("historialContainer");
             const flecha = document.getElementById("iconoFlechaHistorial");
-            if (container.style.display === "block") {
-                container.style.display = "none";
-                flecha.innerText = "▼";
-            } else {
-                container.style.display = "block";
-                flecha.innerText = "▲";
-                cargarHistorial(usuarioActualUID);
-            }
+            container.style.display = container.style.display === "block" ? "none" : "block";
+            flecha.innerText = container.style.display === "block" ? "▲" : "▼";
         }
 
         function horaAMinutos(horaStr) {
@@ -454,59 +395,377 @@
             let horas = parseInt(partes[0], 10);
             const minutos = partes[1];
             const ampm = horas >= 12 ? "PM" : "AM";
-            horas = horas % 12;
-            horas = horas ? horas : 12;
+            horas = horas % 12 || 12;
             return `${horas}:${minutos} ${ampm}`;
         }
 
+        // CONTROL DE AUTENTICACIÓN Y FALLBACK DE TIEMPO DE ESPERA
         auth.onAuthStateChanged((user) => {
             if (user) {
                 usuarioActualUID = user.uid;
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
 
-                        if (data.rol === "admin") {
-                            document.getElementById("lblBarberia").innerText = "Modo Administrador";
-                            document.getElementById("lblLicenciaHeader").innerHTML = "";
-                            document.getElementById("vistaBarberia").style.display = "none";
-                            document.getElementById("vistaExpirado").style.display = "none";
-                            document.getElementById("vistaAdmin").style.display = "block";
-                            cargarListaBarberias();
-                            return;
-                        }
-
-                        const ahora = new Date();
-                        const fechaExpira = data.expiraEn ? new Date(data.expiraEn) : new Date(0);
-
-                        if (ahora > fechaExpira) {
-                            document.getElementById("lblBarberia").innerText = data.nombre || "Mi Barbería";
-                            document.getElementById("lblLicenciaHeader").innerHTML = "<span style='color: #ff5252;'>🔴 Licencia Expirada</span>";
-                            document.getElementById("vistaBarberia").style.display = "none";
-                            document.getElementById("vistaAdmin").style.display = "none";
-                            document.getElementById("vistaExpirado").style.display = "block";
-                        } else {
-                            document.getElementById("lblBarberia").innerText = data.nombre || "Mi Barbería";
-                            
-                            const diffTiempo = Math.abs(fechaExpira - ahora);
-                            const diasRestantes = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
-                            
-                            document.getElementById("lblLicenciaHeader").innerHTML = `🟢 ${diasRestantes} días de licencia`;
-
-                            document.getElementById("vistaExpirado").style.display = "none";
-                            document.getElementById("vistaAdmin").style.display = "none";
-                            document.getElementById("vistaBarberia").style.display = "block";
-
-                            cargarCitas(user.uid);
-                        }
+                let cargado = false;
+                
+                // SI EN 2.5 SEGUNDOS FIRESTORE NO RESPONDE, CARGAMOS LA VISTA POR DEFECTO PARA NO ATASCAR EL PROCESO
+                const fallbackTimeout = setTimeout(() => {
+                    if (!cargado) {
+                        document.getElementById("lblBarberia").innerText = "Mi Barbería";
+                        document.getElementById("lblLicenciaHeader").innerHTML = "🟢 15 días de licencia";
+                        document.getElementById("vistaExpirado").style.display = "none";
+                        document.getElementById("vistaAdmin").style.display = "none";
+                        document.getElementById("vistaBarberia").style.display = "block";
+                        cargarHistorialYFidelidad(user.uid);
                     }
-                }).catch(err => console.error("Error al obtener perfil:", err));
+                }, 2500);
+
+                db.collection("usuarios").doc(user.uid).onSnapshot((doc) => {
+                    cargado = true;
+                    clearTimeout(fallbackTimeout);
+
+                    let data = doc.exists ? doc.data() : null;
+
+                    if (!data) {
+                        const fExp = new Date();
+                        fExp.setDate(fExp.getDate() + 15);
+                        data = {
+                            nombre: "Mi Barbería",
+                            correo: user.email,
+                            rol: "barberia",
+                            expiraEn: fExp.toISOString()
+                        };
+                        db.collection("usuarios").doc(user.uid).set(data);
+                    }
+
+                    if (data.rol === "admin") {
+                        document.getElementById("lblBarberia").innerText = "Modo Administrador";
+                        document.getElementById("lblLicenciaHeader").innerHTML = "";
+                        document.getElementById("vistaBarberia").style.display = "none";
+                        document.getElementById("vistaExpirado").style.display = "none";
+                        document.getElementById("vistaAdmin").style.display = "block";
+                        cargarListaBarberias();
+                        return;
+                    }
+
+                    const ahora = new Date();
+                    let fechaExpira = data.expiraEn ? new Date(data.expiraEn) : new Date(0);
+                    if (isNaN(fechaExpira.getTime())) fechaExpira = new Date(0);
+
+                    if (ahora > fechaExpira) {
+                        document.getElementById("lblBarberia").innerText = data.nombre || "Mi Barbería";
+                        document.getElementById("lblLicenciaHeader").innerHTML = "<span style='color: #ff5252;'>🔴 Licencia Expirada</span>";
+                        document.getElementById("vistaBarberia").style.display = "none";
+                        document.getElementById("vistaAdmin").style.display = "none";
+                        document.getElementById("vistaExpirado").style.display = "block";
+                    } else {
+                        document.getElementById("lblBarberia").innerText = data.nombre || "Mi Barbería";
+                        const diffTiempo = Math.abs(fechaExpira - ahora);
+                        const diasRestantes = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
+                        
+                        document.getElementById("lblLicenciaHeader").innerHTML = `🟢 ${diasRestantes} días de licencia`;
+                        document.getElementById("vistaExpirado").style.display = "none";
+                        document.getElementById("vistaAdmin").style.display = "none";
+                        document.getElementById("vistaBarberia").style.display = "block";
+
+                        cargarHistorialYFidelidad(user.uid);
+                    }
+                }, (error) => {
+                    cargado = true;
+                    clearTimeout(fallbackTimeout);
+                    document.getElementById("lblBarberia").innerText = "Mi Barbería";
+                    document.getElementById("vistaBarberia").style.display = "block";
+                    cargarHistorialYFidelidad(user.uid);
+                });
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        function validarYGuardarCita() {
+        function cargarListaBarberias() {
+            const contenedor = document.getElementById("listaUsuarios");
+            db.collection("usuarios").onSnapshot((querySnapshot) => {
+                contenedor.innerHTML = "";
+                let hayUsuarios = false;
+
+                querySnapshot.forEach((doc) => {
+                    const u = doc.data();
+                    const uid = doc.id;
+
+                    if (u.rol === "admin") return;
+
+                    hayUsuarios = true;
+
+                    const fechaExp = u.expiraEn ? new Date(u.expiraEn) : new Date(0);
+                    const ahora = new Date();
+                    const estaActivo = fechaExp > ahora;
+                    
+                    let diasR = 0;
+                    if (estaActivo) {
+                        const diff = Math.abs(fechaExp - ahora);
+                        diasR = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                    }
+
+                    contenedor.innerHTML += `
+                        <div class="usuario-card" id="card_${uid}">
+                            <strong>💈 ${u.nombre || "Barbería Sin Nombre"}</strong>
+                            <p>🔑 Usuario: <strong>${u.usuario || u.correo}</strong></p>
+                            <p>Status: ${estaActivo ? `<span style="color: #4caf50;">🟢 Activo (${diasR} días restantes)</span>` : `<span style="color: #ff5252;">🔴 Expirado</span>`}</p>
+                            <p style="font-size: 11px; color: #888;">Expira: ${fechaExp.toLocaleDateString()}</p>
+                            
+                            <div class="admin-actions">
+                                <input type="number" id="dias_${uid}" value="30" min="1">
+                                <button class="btn-add-days" onclick="agregarDias('${uid}', '${u.expiraEn || ''}')">➕ Sumar Días</button>
+                                <button class="btn-expire-days" onclick="expirarAhora('${uid}')">🚫 Expirar</button>
+                                <button class="btn-expire-days" style="background: #5a1111; border-color: #ff5252;" onclick="eliminarUsuarioBD('${uid}')">🗑️ Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (!hayUsuarios) {
+                    contenedor.innerHTML = "<p style='color: #aaa;'>No hay barberías registradas en la base de datos.</p>";
+                }
+            });
+        }
+
+        function agregarDias(uid, fechaActualStr) {
+            const input = document.getElementById(`dias_${uid}`);
+            const diasASumar = parseInt(input.value, 10);
+
+            if (isNaN(diasASumar) || diasASumar <= 0) {
+                mostrarAlerta("Ingresa un número válido de días.");
+                return;
+            }
+
+            let fechaBase = new Date();
+            if (fechaActualStr) {
+                const fActual = new Date(fechaActualStr);
+                if (fActual > fechaBase) fechaBase = fActual;
+            }
+
+            fechaBase.setDate(fechaBase.getDate() + diasASumar);
+
+            db.collection("usuarios").doc(uid).update({
+                expiraEn: fechaBase.toISOString()
+            }).then(async () => {
+                await mostrarAlerta(`¡Se agregaron ${diasASumar} días con éxito!`);
+            });
+        }
+
+        async function expirarAhora(uid) {
+            let conf = await mostrarConfirmacion("¿Deseas suspender la licencia de esta barbería de inmediato?");
+            if (!conf) return;
+
+            db.collection("usuarios").doc(uid).update({
+                expiraEn: new Date(0).toISOString()
+            }).then(async () => {
+                await mostrarAlerta("La suscripción ha sido suspendida.");
+            });
+        }
+
+        async function eliminarUsuarioBD(uid) {
+            let conf = await mostrarConfirmacion("¿Estás seguro de eliminar completamente esta barbería de la base de datos?");
+            if (!conf) return;
+
+            db.collection("usuarios").doc(uid).delete().then(async () => {
+                await mostrarAlerta("Barbería eliminada correctamente de Firestore.");
+            }).catch(err => {
+                mostrarAlerta("Error al eliminar: " + err.message);
+            });
+        }
+
+        function cargarHistorialYFidelidad(uid) {
+            clientesVisitasMap = {};
+            historialCompleto = [];
+
+            db.collection("usuarios").doc(uid).collection("historial").onSnapshot((querySnapshot) => {
+                const contenedor = document.getElementById("listaHistorial");
+                contenedor.innerHTML = "";
+                historialCompleto = [];
+
+                querySnapshot.forEach((doc) => {
+                    const h = doc.data();
+                    historialCompleto.push(h);
+
+                    if (h.citas) {
+                        h.citas.forEach(cita => {
+                            if (cita.estado === "completada") {
+                                let keyCliente = cita.telefono !== "Sin teléfono" ? cita.telefono : cita.cliente.toLowerCase();
+                                if (!clientesVisitasMap[keyCliente]) {
+                                    clientesVisitasMap[keyCliente] = {
+                                        nombre: cita.cliente,
+                                        telefono: cita.telefono,
+                                        visitas: 0
+                                    };
+                                }
+                                clientesVisitasMap[keyCliente].visitas++;
+                            }
+                        });
+                    }
+
+                    let detalleHTML = "";
+                    if (h.citas) {
+                        h.citas.forEach(item => {
+                            let est = item.estado === 'pendiente' ? 'cancelada' : item.estado;
+                            let colorEst = est === 'completada' ? '#4caf50' : '#ff5252';
+                            detalleHTML += `
+                                <div class="historial-item-cliente" style="border-left-color: ${colorEst}">
+                                    <div class="cliente-info">
+                                        <span class="cliente-nombre">👤 ${item.cliente} (${item.hora})</span>
+                                        <span class="cliente-tel">📱 Tel: ${item.telefono}</span>
+                                        <span class="cliente-servicio">✂️ ${item.servicio}</span>
+                                    </div>
+                                    <div class="cliente-pago">
+                                        <span class="monto-tag">$${item.precio}</span>
+                                        <span class="estado-tag" style="color: ${colorEst}">${est}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    contenedor.innerHTML += `
+                        <div class="historial-dia-card">
+                            <div class="historial-dia-header">📅 Día: ${h.fecha}</div>
+                            <div>${detalleHTML}</div>
+                            <div class="historial-total">Total Ganado: $${h.totalGanado.toLocaleString()}</div>
+                        </div>
+                    `;
+                });
+
+                if (querySnapshot.empty) {
+                    contenedor.innerHTML = "<p style='font-size: 13px; color: #aaa;'>Sin días en el historial.</p>";
+                }
+
+                cargarCitas(uid);
+            });
+        }
+
+        function renderizarClientesVip() {
+            const contenedor = document.getElementById("listaClientesVip");
+            contenedor.innerHTML = "";
+
+            let llaves = Object.keys(clientesVisitasMap);
+            if (llaves.length === 0) {
+                contenedor.innerHTML = "<p style='color: #aaa; font-size: 13px;'>Aún no hay clientes con visitas completadas.</p>";
+                return;
+            }
+
+            llaves.forEach(key => {
+                let c = clientesVisitasMap[key];
+                let porcentaje = Math.min((c.visitas / 5) * 100, 100);
+                let listoPremio = c.visitas >= 5;
+
+                contenedor.innerHTML += `
+                    <div class="vip-client-card">
+                        <strong>👤 ${c.nombre}</strong>
+                        <small>📱 Tel: ${c.telefono}</small>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px;">
+                            <span>Progreso</span>
+                            <span style="color: #ffd700; font-weight: bold;">${c.visitas} / 5 visitas</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${porcentaje}%;"></div>
+                        </div>
+                        ${listoPremio ? `
+                            <button class="btn-claim-reward" onclick="canjearPremioCliente('${key}')">🎁 Canjear Corte Gratis</button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        async function canjearPremioCliente(key) {
+            let conf = await mostrarConfirmacion(`¿Deseas canjear el premio de Corte Gratis para ${clientesVisitasMap[key].nombre}?`);
+            if (!conf) return;
+
+            clientesVisitasMap[key].visitas -= 5;
+            if (clientesVisitasMap[key].visitas < 0) clientesVisitasMap[key].visitas = 0;
+
+            await mostrarAlerta("🎁 ¡Felicidades! Se ha registrado el canje del Corte Gratis.");
+            renderizarClientesVip();
+            cargarCitas(usuarioActualUID);
+        }
+
+        function cambiarFiltroFinanciero(tipo) {
+            filtroActual = tipo;
+            document.getElementById("filterHoy").classList.remove("active");
+            document.getElementById("filterSemana").classList.remove("active");
+            document.getElementById("filterMes").classList.remove("active");
+
+            if (tipo === 'hoy') document.getElementById("filterHoy").classList.add("active");
+            if (tipo === 'semana') document.getElementById("filterSemana").classList.add("active");
+            if (tipo === 'mes') document.getElementById("filterMes").classList.add("active");
+
+            calcularMetricasFinancieras();
+        }
+
+        function calcularMetricasFinancieras() {
+            let totalRecaudado = 0;
+            let totalCitas = 0;
+            let contadorServicios = {};
+
+            const ahora = new Date();
+            const inicioSemana = new Date(ahora);
+            inicioSemana.setDate(ahora.getDate() - ahora.getDay());
+            inicioSemana.setHours(0,0,0,0);
+
+            const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+
+            if (filtroActual === 'hoy') {
+                document.getElementById("lblSubtextIngresos").innerText = "Completados Hoy";
+                document.getElementById("lblSubtextCitas").innerText = "Registradas Hoy";
+
+                citasExistentes.forEach(c => {
+                    totalCitas++;
+                    if (c.estado === "completada") {
+                        totalRecaudado += c.precio;
+                        contadorServicios[c.servicio] = (contadorServicios[c.servicio] || 0) + 1;
+                    }
+                });
+            } else {
+                let fechaLimite = filtroActual === 'semana' ? inicioSemana : inicioMes;
+                document.getElementById("lblSubtextIngresos").innerText = filtroActual === 'semana' ? "Esta Semana" : "Este Mes";
+                document.getElementById("lblSubtextCitas").innerText = filtroActual === 'semana' ? "Esta Semana" : "Este Mes";
+
+                historialCompleto.forEach(h => {
+                    let fechaH = h.timestamp ? h.timestamp.toDate() : new Date();
+                    if (fechaH >= fechaLimite) {
+                        if (h.citas) {
+                            h.citas.forEach(item => {
+                                totalCitas++;
+                                if (item.estado === "completada") {
+                                    totalRecaudado += item.precio;
+                                    contadorServicios[item.servicio] = (contadorServicios[item.servicio] || 0) + 1;
+                                }
+                            });
+                        }
+                    }
+                });
+
+                citasExistentes.forEach(c => {
+                    totalCitas++;
+                    if (c.estado === "completada") {
+                        totalRecaudado += c.precio;
+                        contadorServicios[c.servicio] = (contadorServicios[c.servicio] || 0) + 1;
+                    }
+                });
+            }
+
+            document.getElementById("lblIngresos").innerText = "$" + totalRecaudado.toLocaleString();
+            document.getElementById("lblTotalCitas").innerText = totalCitas;
+
+            let servicioTop = "Ninguno aún";
+            let maxConteo = 0;
+            for (const [serv, cant] of Object.entries(contadorServicios)) {
+                if (cant > maxConteo) {
+                    maxConteo = cant;
+                    servicioTop = `${serv} (${cant})`;
+                }
+            }
+            document.getElementById("lblTopServicio").innerText = servicioTop;
+        }
+
+        async function validarYGuardarCita() {
             const cliente = document.getElementById("inputCliente").value.trim();
             const telefono = document.getElementById("inputTelefono").value.trim();
             const servicio = document.getElementById("selectServicio").value;
@@ -514,39 +773,24 @@
             const precio = parseFloat(document.getElementById("inputPrecio").value);
 
             if (!cliente || !horaElegida || isNaN(precio)) {
-                alert("Por favor completa el nombre del cliente, la hora y el precio.");
+                await mostrarAlerta("Por favor completa el nombre del cliente, la hora y el precio.");
                 return;
             }
 
             let minutosElegidos = horaAMinutos(horaElegida);
-            let hayChoque = false;
-
-            for (let c of citasExistentes) {
-                if (c.estado === "pendiente") {
-                    let minCita = horaAMinutos(c.hora);
-                    let diferencia = Math.abs(minutosElegidos - minCita);
-                    if (diferencia < 30) {
-                        hayChoque = true;
-                        break;
-                    }
-                }
-            }
+            let hayChoque = citasExistentes.some(c => c.estado === "pendiente" && Math.abs(minutosElegidos - horaAMinutos(c.hora)) < 30);
 
             if (hayChoque) {
                 let horaSugerida24 = minutosAHora24(minutosElegidos + 30);
                 let horaSugerida12 = formatearHora12(horaSugerida24);
 
-                let deseaReagendar = confirm(
-                    `⚠️ ¡Atención! Ya tienes una cita PENDIENTE cercana a la hora elegida (${formatearHora12(horaElegida)}).\n\n` +
-                    `¿Deseas agendar esta cita 30 minutos después (a las ${horaSugerida12})?\n\n` +
-                    `Presiona [Aceptar] para agendar a las ${horaSugerida12} o [Cancelar] para elegir otra hora.`
+                let deseaReagendar = await mostrarConfirmacion(
+                    `⚠️ Ya tienes una cita PENDIENTE cercana (${formatearHora12(horaElegida)}).\n\n` +
+                    `¿Deseas agendar a las ${horaSugerida12}?`
                 );
 
-                if (deseaReagendar) {
-                    horaElegida = horaSugerida24;
-                } else {
-                    return;
-                }
+                if (deseaReagendar) horaElegida = horaSugerida24;
+                else return;
             }
 
             ejecutarGuardadoCita(cliente, telefono, servicio, horaElegida, precio);
@@ -564,108 +808,84 @@
             };
 
             db.collection("usuarios").doc(usuarioActualUID).collection("citas").add(nuevaCita)
-                .then(() => {
-                    alert(`¡Cita agendada correctamente a las ${formatearHora12(hora)}!`);
+                .then(async () => {
+                    await mostrarAlerta(`¡Cita agendada a las ${formatearHora12(hora)}!`);
                     document.getElementById("inputCliente").value = "";
                     document.getElementById("inputTelefono").value = "";
                     document.getElementById("inputHora").value = "";
                     document.getElementById("inputPrecio").value = "";
                     toggleFormulario();
-                    cargarCitas(usuarioActualUID);
-                })
-                .catch(err => alert("Error al guardar la cita."));
+                });
         }
 
         function cargarCitas(uid) {
             const lista = document.getElementById("listaCitas");
             const btnReset = document.getElementById("btnResetDay");
 
-            db.collection("usuarios").doc(uid).collection("citas").get()
-                .then((querySnapshot) => {
-                    lista.innerHTML = "";
-                    let totalCitas = 0;
-                    let totalIngresos = 0;
-                    citasExistentes = [];
+            db.collection("usuarios").doc(uid).collection("citas").onSnapshot((querySnapshot) => {
+                lista.innerHTML = "";
+                citasExistentes = [];
 
-                    if (querySnapshot.empty) {
-                        lista.innerHTML = "<p style='font-size: 13px; color: #aaa;'>No hay citas registradas para hoy.</p>";
-                        document.getElementById("lblTotalCitas").innerText = "0";
-                        document.getElementById("lblIngresos").innerText = "$0";
-                        btnReset.style.display = "none";
-                        return;
-                    }
+                if (querySnapshot.empty) {
+                    lista.innerHTML = "<p style='font-size: 13px; color: #aaa;'>No hay citas registradas para hoy.</p>";
+                    btnReset.style.display = "none";
+                    calcularMetricasFinancieras();
+                    return;
+                }
 
-                    btnReset.style.display = "block";
+                btnReset.style.display = "block";
 
-                    querySnapshot.forEach((doc) => {
-                        let data = doc.data();
-                        data.id = doc.id;
-                        citasExistentes.push(data);
-                    });
+                querySnapshot.forEach((doc) => {
+                    let data = doc.data();
+                    data.id = doc.id;
+                    citasExistentes.push(data);
+                });
 
-                    citasExistentes.sort((a, b) => a.hora.localeCompare(b.hora));
+                citasExistentes.sort((a, b) => a.hora.localeCompare(b.hora));
 
-                    citasExistentes.forEach((c) => {
-                        const idCita = c.id;
-                        totalCitas++;
+                citasExistentes.forEach((c) => {
+                    let colorEstado = c.estado === "completada" ? "#4caf50" : (c.estado === "cancelada" ? "#ff5252" : "#d4af37");
 
-                        if (c.estado === "completada") {
-                            totalIngresos += c.precio;
-                        }
+                    let keyCliente = c.telefono !== "Sin teléfono" ? c.telefono : c.cliente.toLowerCase();
+                    let clienteObj = clientesVisitasMap[keyCliente];
+                    let visitasPrevias = clienteObj ? clienteObj.visitas : 0;
+                    let esVip = visitasPrevias >= 5;
+                    let vipBadgeHTML = esVip ? `<div class="vip-badge">🎁 ¡CORTE GRATIS DISPONIBLE!</div>` : '';
 
-                        let colorEstado = c.estado === "completada" ? "#4caf50" : (c.estado === "cancelada" ? "#ff5252" : "#d4af37");
-                        const horaMostrar = formatearHora12(c.hora);
-
-                        const itemHTML = `
-                            <div class="item-cita" style="border-left-color: ${colorEstado}">
-                                <div>
-                                    <strong>👤 ${c.cliente} (${horaMostrar})</strong>
-                                    <small>✂️ ${c.servicio} | 📱 ${c.telefono}</small>
-                                    <small style="color: ${colorEstado}; font-weight: bold; text-transform: uppercase;">• ${c.estado}</small>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div class="precio-tag">$${c.precio}</div>
-                                    ${c.estado === 'pendiente' ? `
-                                        <button class="btn-estado btn-completar" onclick="cambiarEstadoCita('${idCita}', 'completada')">✓</button>
-                                        <button class="btn-estado btn-cancelar" onclick="cambiarEstadoCita('${idCita}', 'cancelada')">✗</button>
-                                    ` : ''}
-                                </div>
+                    lista.innerHTML += `
+                        <div class="item-cita" style="border-left-color: ${colorEstado}">
+                            <div>
+                                <strong>👤 ${c.cliente} (${formatearHora12(c.hora)})</strong>
+                                <small>✂️ ${c.servicio} | 📱 ${c.telefono}</small>
+                                <small style="color: ${colorEstado}; font-weight: bold; text-transform: uppercase;">• ${c.estado}</small>
+                                ${vipBadgeHTML}
                             </div>
-                        `;
-                        lista.innerHTML += itemHTML;
-                    });
+                            <div style="text-align: right;">
+                                <div class="precio-tag">$${c.precio}</div>
+                                ${c.estado === 'pendiente' ? `
+                                    <button class="btn-estado btn-completar" onclick="cambiarEstadoCita('${c.id}', 'completada')">✓</button>
+                                    <button class="btn-estado btn-cancelar" onclick="cambiarEstadoCita('${c.id}', 'cancelada')">✗</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
 
-                    document.getElementById("lblTotalCitas").innerText = totalCitas;
-                    document.getElementById("lblIngresos").innerText = "$" + totalIngresos.toLocaleString();
-                })
-                .catch(err => console.error("Error al cargar citas:", err));
+                calcularMetricasFinancieras();
+            });
         }
 
-        // REINICIAR DÍA Y CONVERTIR PENDIENTES EN CANCELADAS
-        function reiniciarDia() {
-            if (!confirm("¿Seguro que deseas reiniciar el día? Las citas que quedaron pendientes pasarán automáticamente a estar canceladas.")) {
-                return;
-            }
-
-            if (citasExistentes.length === 0) {
-                alert("No hay citas que guardar en el historial.");
-                return;
-            }
+        async function reiniciarDia() {
+            let confirmado = await mostrarConfirmacion("¿Reiniciar el día? Las citas pendientes pasarán a estar canceladas.");
+            if (!confirmado) return;
+            if (citasExistentes.length === 0) return;
 
             const fechaHoy = new Date().toLocaleDateString("es-ES", { year: 'numeric', month: '2-digit', day: '2-digit' });
-            let totalRecaudado = 0;
-            let listaDetalle = [];
+            let totalRecaudado = 0, listaDetalle = [];
 
             citasExistentes.forEach(c => {
-                let estadoFinal = c.estado;
-                // Si la cita finalizó el día como 'pendiente', se marca automáticamente como 'cancelada'
-                if (estadoFinal === "pendiente") {
-                    estadoFinal = "cancelada";
-                }
-
-                if (estadoFinal === "completada") {
-                    totalRecaudado += c.precio;
-                }
+                let estadoFinal = c.estado === "pendiente" ? "cancelada" : c.estado;
+                if (estadoFinal === "completada") totalRecaudado += c.precio;
 
                 listaDetalle.push({
                     cliente: c.cliente,
@@ -677,252 +897,28 @@
                 });
             });
 
-            const registroHistorial = {
+            db.collection("usuarios").doc(usuarioActualUID).collection("historial").add({
                 fecha: fechaHoy,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 totalGanado: totalRecaudado,
                 citas: listaDetalle
-            };
-
-            db.collection("usuarios").doc(usuarioActualUID).collection("historial").add(registroHistorial)
-                .then(() => {
-                    return db.collection("usuarios").doc(usuarioActualUID).collection("citas").get();
-                })
-                .then((querySnapshot) => {
-                    const batch = db.batch();
-                    querySnapshot.forEach((doc) => {
-                        batch.delete(doc.ref);
-                    });
-                    return batch.commit();
-                })
-                .then(() => {
-                    alert("¡Día guardado en el historial! Las citas pendientes se han registrado como canceladas.");
-                    cargarCitas(usuarioActualUID);
-                })
-                .catch(err => alert("Error al reiniciar el día."));
-        }
-
-        // CARGAR HISTORIAL DE DÍAS Y FORZAR 'PENDIENTE' A 'CANCELADA'
-        function cargarHistorial(uid) {
-            const contenedor = document.getElementById("listaHistorial");
-
-            db.collection("usuarios").doc(uid).collection("historial").orderBy("timestamp", "desc").get()
-                .then((querySnapshot) => {
-                    contenedor.innerHTML = "";
-
-                    if (querySnapshot.empty) {
-                        contenedor.innerHTML = "<p style='font-size: 13px; color: #aaa;'>Aún no hay días guardados en el historial.</p>";
-                        return;
-                    }
-
-                    querySnapshot.forEach((doc) => {
-                        const h = doc.data();
-                        
-                        let detalleCitasHTML = "";
-                        if (h.citas && h.citas.length > 0) {
-                            h.citas.forEach(item => {
-                                // Convierte automáticamente 'pendiente' a 'cancelada' incluso si venía de un guardado anterior
-                                let estadoMostrar = item.estado;
-                                if (estadoMostrar === 'pendiente') {
-                                    estadoMostrar = 'cancelada';
-                                }
-
-                                let colorEstado = estadoMostrar === 'completada' ? '#4caf50' : '#ff5252';
-                                
-                                detalleCitasHTML += `
-                                    <div class="historial-item-cliente" style="border-left-color: ${colorEstado}">
-                                        <div class="cliente-info">
-                                            <span class="cliente-nombre">👤 ${item.cliente} (${item.hora})</span>
-                                            <span class="cliente-tel">📱 Tel: ${item.telefono}</span>
-                                            <span class="cliente-servicio">✂️ ${item.servicio}</span>
-                                        </div>
-                                        <div class="cliente-pago">
-                                            <span class="monto-tag">$${item.precio}</span>
-                                            <span class="estado-tag" style="color: ${colorEstado}">${estadoMostrar}</span>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                        }
-
-                        const cardHTML = `
-                            <div class="historial-dia-card">
-                                <div class="historial-dia-header">
-                                    <span>📅 Día: ${h.fecha}</span>
-                                </div>
-                                <div>${detalleCitasHTML}</div>
-                                <div class="historial-total">Total Ganado: $${h.totalGanado.toLocaleString()}</div>
-                            </div>
-                        `;
-                        contenedor.innerHTML += cardHTML;
-                    });
-                })
-                .catch(err => console.error("Error al cargar historial:", err));
+            }).then(() => {
+                return db.collection("usuarios").doc(usuarioActualUID).collection("citas").get();
+            }).then((querySnapshot) => {
+                const batch = db.batch();
+                querySnapshot.forEach((doc) => batch.delete(doc.ref));
+                return batch.commit();
+            }).then(async () => {
+                await mostrarAlerta("¡Día guardado en el historial!");
+            });
         }
 
         function cambiarEstadoCita(idCita, nuevoEstado) {
-            db.collection("usuarios").doc(usuarioActualUID).collection("citas").doc(idCita).update({
-                estado: nuevoEstado
-            }).then(() => {
-                cargarCitas(usuarioActualUID);
-            });
-        }
-
-        function cargarListaBarberias() {
-            const contenedor = document.getElementById("listaUsuarios");
-            
-            db.collection("usuarios").get().then((querySnapshot) => {
-                contenedor.innerHTML = "";
-
-                if (querySnapshot.empty) {
-                    contenedor.innerHTML = "<p>No hay barberías registradas aún.</p>";
-                    return;
-                }
-
-                const ahora = new Date();
-
-                querySnapshot.forEach((doc) => {
-                    const u = doc.data();
-                    const uid = doc.id;
-                    const esAdmin = u.rol === "admin";
-
-                    let usuarioHTML = "";
-
-                    if (esAdmin) {
-                        usuarioHTML = `
-                            <div class="usuario-card" style="border-left-color: #4caf50;">
-                                <strong>👤 ${u.nombre || "Administrador"} (Admin)</strong>
-                                <p>✉️ Correo: ${u.correo || "No registrado"}</p>
-                            </div>
-                        `;
-                    } else {
-                        const fechaExpira = u.expiraEn ? new Date(u.expiraEn) : null;
-                        let estadoLicencia = "Sin días asignados";
-                        
-                        if (fechaExpira) {
-                            if (ahora > fechaExpira) {
-                                estadoLicencia = "🔴 Expirado";
-                            } else {
-                                const diff = Math.ceil((fechaExpira - ahora) / (1000 * 60 * 60 * 24));
-                                estadoLicencia = `🟢 Activo (${diff} días restantes)`;
-                            }
-                        }
-
-                        usuarioHTML = `
-                            <div class="usuario-card">
-                                <strong>💈 ${u.nombre || "Sin Nombre"}</strong>
-                                <p>✉️ Correo: ${u.correo || "No registrado"}</p>
-                                <p>🔑 Licencia: <strong>${estadoLicencia}</strong></p>
-                                
-                                <div class="admin-actions">
-                                    <button class="btn-add-days" onclick="sumarDias('${uid}', 30)">+30 Días</button>
-                                    
-                                    <input type="number" id="inputDias_${uid}" placeholder="Días" min="1" value="15">
-                                    <button class="btn-add-days" style="background: #4caf50; color: #fff;" onclick="sumarDiasManual('${uid}')">+ Sumar</button>
-                                    <button class="btn-add-days" style="background: #ff9800; color: #000;" onclick="restarDiasManual('${uid}')">- Quitar</button>
-                                    
-                                    <button class="btn-expire-days" onclick="expirarDias('${uid}')">🚫 Expirar</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    contenedor.innerHTML += usuarioHTML;
-                });
-            }).catch((error) => {
-                console.error("Error al cargar barberías:", error);
-                contenedor.innerHTML = "<p>Error al obtener lista de barberías.</p>";
-            });
-        }
-
-        function sumarDias(uidUsuario, dias) {
-            db.collection("usuarios").doc(uidUsuario).get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    const ahora = new Date();
-                    let baseFecha = data.expiraEn ? new Date(data.expiraEn) : ahora;
-
-                    if (ahora > baseFecha) {
-                        baseFecha = ahora;
-                    }
-
-                    baseFecha.setDate(baseFecha.getDate() + dias);
-
-                    db.collection("usuarios").doc(uidUsuario).update({
-                        expiraEn: baseFecha.toISOString()
-                    }).then(() => {
-                        alert(`¡Se agregaron ${dias} días a la suscripción!`);
-                        cargarListaBarberias();
-                    });
-                }
-            }).catch(err => alert("Error al actualizar días."));
-        }
-
-        function sumarDiasManual(uidUsuario) {
-            const input = document.getElementById(`inputDias_${uidUsuario}`);
-            const dias = parseInt(input.value);
-
-            if (!dias || dias <= 0) {
-                alert("Por favor ingresa un número de días válido.");
-                return;
-            }
-
-            sumarDias(uidUsuario, dias);
-        }
-
-        function restarDiasManual(uidUsuario) {
-            const input = document.getElementById(`inputDias_${uidUsuario}`);
-            const diasResta = parseInt(input.value);
-
-            if (!diasResta || diasResta <= 0) {
-                alert("Por favor ingresa un número de días válido.");
-                return;
-            }
-
-            db.collection("usuarios").doc(uidUsuario).get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    const ahora = new Date();
-                    let fechaActual = data.expiraEn ? new Date(data.expiraEn) : ahora;
-
-                    if (ahora > fechaActual) {
-                        alert("La barbería ya tiene la cuenta expirada.");
-                        return;
-                    }
-
-                    fechaActual.setDate(fechaActual.getDate() - diasResta);
-
-                    if (ahora > fechaActual) {
-                        fechaActual = new Date(0);
-                    }
-
-                    db.collection("usuarios").doc(uidUsuario).update({
-                        expiraEn: fechaActual.toISOString()
-                    }).then(() => {
-                        alert(`¡Se descontaron ${diasResta} días de la suscripción!`);
-                        cargarListaBarberias();
-                    });
-                }
-            }).catch(err => alert("Error al restar días."));
-        }
-
-        function expirarDias(uidUsuario) {
-            if (!confirm("¿Seguro que deseas expirar la suscripción de esta barbería?")) return;
-
-            const fechaPasada = new Date(0).toISOString();
-
-            db.collection("usuarios").doc(uidUsuario).update({
-                expiraEn: fechaPasada
-            }).then(() => {
-                alert("Suscripción expirada correctamente.");
-                cargarListaBarberias();
-            }).catch(err => alert("Error al expirar la suscripción."));
+            db.collection("usuarios").doc(usuarioActualUID).collection("citas").doc(idCita).update({ estado: nuevoEstado });
         }
 
         function cerrarSesion() {
-            auth.signOut().then(() => {
-                window.location.href = "index.html";
-            });
+            auth.signOut().then(() => window.location.href = "index.html");
         }
     </script>
 </body>
