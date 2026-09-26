@@ -3,71 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BarberControl - Iniciar Sesión</title>
+    <title>BarberControl - Iniciar Sesión / Registro</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #121212; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        .auth-card { background: #1e1e1e; width: 100%; max-width: 400px; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #333; text-align: center; }
-        .auth-card h1 { font-size: 24px; color: #d4af37; margin-bottom: 5px; font-weight: bold; }
-        .auth-card p { font-size: 13px; color: #aaa; margin-bottom: 20px; }
+        .login-card { background: #1e1e1e; border-radius: 16px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid #2a2a2a; text-align: center; }
+        .login-card h1 { color: #d4af37; font-size: 24px; margin-bottom: 8px; }
+        .login-card p { color: #aaa; font-size: 13px; margin-bottom: 25px; }
 
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 12px; color: #bbb; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper input { width: 100%; padding: 12px; padding-right: 40px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.3s; }
-        .input-wrapper input:focus { border-color: #d4af37; }
-        
-        .toggle-password { position: absolute; right: 12px; background: none; border: none; color: #aaa; cursor: pointer; font-size: 16px; user-select: none; }
-        
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #aaa; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .tab-btn.active { color: #d4af37; border-bottom: 2px solid #d4af37; }
+
+        .form-group { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+        .form-group label { font-size: 12px; color: #aaa; }
         .form-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         .form-group input:focus { border-color: #d4af37; }
 
-        .btn-main { width: 100%; padding: 12px; background: #d4af37; color: #000; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
-        .btn-main:hover { background: #c5a028; }
+        .btn-submit { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; width: 100%; margin-top: 15px; transition: background 0.2s; }
+        .btn-submit:hover { background: #c5a028; }
 
-        .toggle-text { margin-top: 15px; font-size: 13px; color: #aaa; }
-        .toggle-text span { color: #d4af37; cursor: pointer; font-weight: bold; text-decoration: underline; }
+        .trial-badge { background: #1b381e; color: #4caf50; border: 1px solid #4caf50; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999; padding: 20px;
+        }
+
+        .modal-box {
+            background: #282828; border: 1px solid #444;
+            border-radius: 14px; padding: 22px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); text-align: center;
+        }
+
+        .modal-box p { color: #e0e0e0; font-size: 15px; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+        .modal-buttons { display: flex; justify-content: center; gap: 10px; }
+        .modal-btn { padding: 10px 18px; border-radius: 8px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; flex: 1; }
+        .modal-btn-ok { background: #d4af37; color: #000; }
     </style>
 
-    <!-- Librerías de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 </head>
 <body>
 
-    <div class="auth-card">
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-box">
+            <p id="modalText"></p>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <div class="login-card">
         <h1>💈 BarberControl</h1>
-        <p id="lblSubtitulo">Ingresa a tu panel de gestión de barbería</p>
+        <p>Sistema de Gestión para Barberías</p>
 
-        <!-- CAMPO REGISTRO: NOMBRE BARBERÍA -->
-        <div class="form-group" id="groupNombre" style="display: none;">
-            <label>Nombre de la Barbería o Barbero</label>
-            <input type="text" id="txtNombre" placeholder="Ej. Barbería El Rey / Carlos Pérez">
+        <div class="tabs">
+            <button id="btnTabLogin" class="tab-btn active" onclick="mostrarTab('login')">Ingresar</button>
+            <button id="btnTabRegistro" class="tab-btn" onclick="mostrarTab('registro')">Registrarse</button>
         </div>
 
-        <!-- CORREO ELECTRÓNICO -->
-        <div class="form-group">
-            <label>Correo Electrónico</label>
-            <input type="email" id="txtCorreo" placeholder="barberia@ejemplo.com">
-        </div>
-
-        <!-- CONTRASEÑA CON BOTÓN VER/OCULTAR -->
-        <div class="form-group">
-            <label>Contraseña</label>
-            <div class="input-wrapper">
-                <input type="password" id="txtPassword" placeholder="••••••••">
-                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+        <!-- FORMULARIO LOGIN -->
+        <form id="formLogin" onsubmit="iniciarSesion(event)">
+            <div class="form-group">
+                <label>Usuario o Correo Electrónico</label>
+                <input type="text" id="loginUsuario" placeholder="Usuario o tu@correo.com" required>
+                
+                <label>Contraseña</label>
+                <input type="password" id="loginPass" placeholder="••••••••" required>
+                
+                <button type="submit" class="btn-submit">Iniciar Sesión</button>
             </div>
-        </div>
+        </form>
 
-        <button class="btn-main" id="btnAccion" onclick="ejecutarAccion()">Iniciar Sesión</button>
+        <!-- FORMULARIO REGISTRO -->
+        <form id="formRegistro" style="display: none;" onsubmit="registrarUsuario(event)">
+            <div class="trial-badge">🎁 ¡Incluye 15 días de prueba gratis!</div>
+            
+            <div class="form-group">
+                <label>Nombre de tu Barbería</label>
+                <input type="text" id="regNombre" placeholder="Ej: Barbería El Rey" required>
 
-        <div class="toggle-text">
-            <span id="lblToggle" onclick="cambiarModo()">¿No tienes cuenta? Regístrate aquí</span>
-        </div>
+                <label>Nombre de Usuario (para ingresar)</label>
+                <input type="text" id="regUsuario" placeholder="Ej: barberia_elrey (sin espacios)" required>
+                
+                <label>Contraseña</label>
+                <input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                
+                <button type="submit" class="btn-submit">Crear Cuenta y Probar</button>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -85,90 +116,102 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let modoRegistro = false;
+        function mostrarAlerta(mensaje) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("customModal");
+                const modalText = document.getElementById("modalText");
+                const modalBtns = document.getElementById("modalButtons");
 
-        // VERIFICAR SI YA HAY SESIÓN INICIADA
+                modalText.innerText = mensaje;
+                modalBtns.innerHTML = `<button class="modal-btn modal-btn-ok" id="btnAlertOk">OK</button>`;
+                modal.style.display = "flex";
+
+                document.getElementById("btnAlertOk").onclick = () => {
+                    modal.style.display = "none";
+                    resolve(true);
+                };
+            });
+        }
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 window.location.href = "barberia.html";
             }
         });
 
-        // CAMBIAR ENTRE LOGIN Y REGISTRO
-        function cambiarModo() {
-            modoRegistro = !modoRegistro;
-            if (modoRegistro) {
-                document.getElementById("lblSubtitulo").innerText = "Registra tu barbería y obtén 15 días gratis";
-                document.getElementById("groupNombre").style.display = "block";
-                document.getElementById("btnAccion").innerText = "Registrar Barbería";
-                document.getElementById("lblToggle").innerText = "¿Ya tienes cuenta? Inicia sesión";
+        function mostrarTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('formLogin').style.display = 'block';
+                document.getElementById('formRegistro').style.display = 'none';
+                document.getElementById('btnTabLogin').classList.add('active');
+                document.getElementById('btnTabRegistro').classList.remove('active');
             } else {
-                document.getElementById("lblSubtitulo").innerText = "Ingresa a tu panel de gestión de barbería";
-                document.getElementById("groupNombre").style.display = "none";
-                document.getElementById("btnAccion").innerText = "Iniciar Sesión";
-                document.getElementById("lblToggle").innerText = "¿No tienes cuenta? Regístrate aquí";
+                document.getElementById('formLogin').style.display = 'none';
+                document.getElementById('formRegistro').style.display = 'block';
+                document.getElementById('btnTabRegistro').classList.add('active');
+                document.getElementById('btnTabLogin').classList.remove('active');
             }
         }
 
-        // MOSTRAR / OCULTAR CONTRASEÑA
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById("txtPassword");
-            if (passInput.type === "password") {
-                passInput.type = "text";
+        function iniciarSesion(e) {
+            e.preventDefault();
+            const inputAcceso = document.getElementById('loginUsuario').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            let correoFinal = "";
+
+            if (inputAcceso.includes("@")) {
+                correoFinal = inputAcceso.toLowerCase();
             } else {
-                passInput.type = "password";
+                let usuarioLimpio = inputAcceso.toLowerCase().replace(/\s+/g, '');
+                correoFinal = `${usuarioLimpio}@barbercontrol.app`;
             }
+
+            auth.signInWithEmailAndPassword(correoFinal, pass)
+                .then(() => {
+                    window.location.href = "barberia.html";
+                })
+                .catch(async (error) => {
+                    await mostrarAlerta("Error al ingresar: Verifica tus datos de acceso y contraseña.");
+                });
         }
 
-        // EJECUTAR LOGIN O REGISTRO
-        function ejecutarAccion() {
-            const correo = document.getElementById("txtCorreo").value.trim();
-            const password = document.getElementById("txtPassword").value;
-            const nombre = document.getElementById("txtNombre").value.trim();
+        function registrarUsuario(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const usuarioInput = document.getElementById('regUsuario').value;
+            const pass = document.getElementById('regPass').value.trim();
 
-            if (!correo || !password) {
-                alert("Por favor completa los campos de correo y contraseña.");
-                return;
-            }
+            const usuarioLimpio = usuarioInput.trim().toLowerCase().replace(/\s+/g, '');
+            const correoGenerado = `${usuarioLimpio}@barbercontrol.app`;
 
-            if (modoRegistro) {
-                if (!nombre) {
-                    alert("Por favor ingresa el nombre de tu barbería o tu nombre.");
-                    return;
-                }
+            auth.createUserWithEmailAndPassword(correoGenerado, pass)
+                .then((userCredential) => {
+                    const user = userCredential.user;
 
-                auth.createUserWithEmailAndPassword(correo, password)
-                    .then((userCredential) => {
-                        const uid = userCredential.user.uid;
-                        
-                        // Asignar 15 días de prueba a partir de hoy
-                        const fechaPrueba = new Date();
-                        fechaPrueba.setDate(fechaPrueba.getDate() + 15);
+                    const fechaExpira = new Date();
+                    fechaExpira.setDate(fechaExpira.getDate() + 15);
 
-                        db.collection("usuarios").doc(uid).set({
-                            nombre: nombre,
-                            correo: correo,
-                            rol: "barbero",
-                            expiraEn: fechaPrueba.toISOString(),
-                            creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            alert("¡Barbería registrada con éxito! Tienes 15 días de prueba.");
-                            window.location.href = "barberia.html";
-                        });
-                    })
-                    .catch((error) => {
-                        alert("Error al registrar: " + error.message);
+                    return db.collection("usuarios").doc(user.uid).set({
+                        nombre: nombre,
+                        usuario: usuarioLimpio,
+                        correo: correoGenerado,
+                        rol: "barberia",
+                        expiraEn: fechaExpira.toISOString(),
+                        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
                     });
-
-            } else {
-                auth.signInWithEmailAndPassword(correo, password)
-                    .then(() => {
-                        window.location.href = "barberia.html";
-                    })
-                    .catch((error) => {
-                        alert("Error al iniciar sesión: " + error.message);
-                    });
-            }
+                })
+                .then(async () => {
+                    await mostrarAlerta("¡Cuenta creada con éxito! Tienes 15 días de prueba gratis.");
+                    window.location.href = "barberia.html";
+                })
+                .catch(async (error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        await mostrarAlerta("El nombre de usuario ya está ocupado. Intenta con otro.");
+                    } else {
+                        await mostrarAlerta("Error al registrarse: " + error.message);
+                    }
+                });
         }
     </script>
 </body>
