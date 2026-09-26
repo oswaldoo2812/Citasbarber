@@ -21,10 +21,19 @@
         .form-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         .form-group input:focus { border-color: #d4af37; }
 
+        /* CONTENEDOR PARA EL INPUT Y EL BOTÓN DE OJO */
+        .pass-container { position: relative; width: 100%; }
+        .pass-container input { padding-right: 42px; }
+        .btn-toggle-pass {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer;
+            padding: 5px; display: flex; align-items: center; justify-content: center;
+        }
+
         .btn-submit { background: #d4af37; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; width: 100%; margin-top: 15px; transition: background 0.2s; }
         .btn-submit:hover { background: #c5a028; }
 
-        .trial-badge { background: #1b381e; color: #4caf50; border: 1px solid #4caf50; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .trial-badge { background: #1b381e; color: #4caf50; border: 1px solid #4caf50; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; text-align: center; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0;
@@ -76,7 +85,10 @@
                 <input type="text" id="loginUsuario" placeholder="Usuario o tu@correo.com" required>
                 
                 <label>Contraseña</label>
-                <input type="password" id="loginPass" placeholder="••••••••" required>
+                <div class="pass-container">
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
+                    <button type="button" class="btn-toggle-pass" onclick="togglePassVisibility('loginPass', this)">👁️</button>
+                </div>
                 
                 <button type="submit" class="btn-submit">Iniciar Sesión</button>
             </div>
@@ -94,7 +106,10 @@
                 <input type="text" id="regUsuario" placeholder="Ej: barberia_elrey (sin espacios)" required>
                 
                 <label>Contraseña</label>
-                <input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                <div class="pass-container">
+                    <input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    <button type="button" class="btn-toggle-pass" onclick="togglePassVisibility('regPass', this)">👁️</button>
+                </div>
                 
                 <button type="submit" class="btn-submit">Crear Cuenta y Probar</button>
             </div>
@@ -131,6 +146,18 @@
                     resolve(true);
                 };
             });
+        }
+
+        // FUNCIÓN PARA ALTERNAR LA VISIBILIDAD DE LA CONTRASEÑA
+        function togglePassVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerText = "🙈";
+            } else {
+                input.type = "password";
+                btn.innerText = "👁️";
+            }
         }
 
         auth.onAuthStateChanged((user) => {
